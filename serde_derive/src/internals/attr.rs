@@ -209,10 +209,10 @@ pub struct RenameAllRules {
 impl RenameAllRules {
     /// Returns a new `RenameAllRules` with the individual rules of `self` and
     /// `other_rules` joined by `RenameRules::or`.
-    pub fn or(&self, other_rules: &Self) -> Self {
+    pub fn or(self, other_rules: Self) -> Self {
         Self {
-            serialize: self.serialize.or(&other_rules.serialize),
-            deserialize: self.deserialize.or(&other_rules.deserialize),
+            serialize: self.serialize.or(other_rules.serialize),
+            deserialize: self.deserialize.or(other_rules.deserialize),
         }
     }
 }
@@ -706,12 +706,12 @@ impl Container {
         &self.name
     }
 
-    pub fn rename_all_rules(&self) -> &RenameAllRules {
-        &self.rename_all_rules
+    pub fn rename_all_rules(&self) -> RenameAllRules {
+        self.rename_all_rules
     }
 
-    pub fn rename_all_fields_rules(&self) -> &RenameAllRules {
-        &self.rename_all_fields_rules
+    pub fn rename_all_fields_rules(&self) -> RenameAllRules {
+        self.rename_all_fields_rules
     }
 
     pub fn transparent(&self) -> bool {
@@ -1156,7 +1156,7 @@ impl Variant {
         self.name.deserialize_aliases()
     }
 
-    pub fn rename_by_rules(&mut self, rules: &RenameAllRules) {
+    pub fn rename_by_rules(&mut self, rules: RenameAllRules) {
         if !self.name.serialize_renamed {
             self.name.serialize = rules.serialize.apply_to_variant(&self.name.serialize);
         }
@@ -1165,8 +1165,8 @@ impl Variant {
         }
     }
 
-    pub fn rename_all_rules(&self) -> &RenameAllRules {
-        &self.rename_all_rules
+    pub fn rename_all_rules(&self) -> RenameAllRules {
+        self.rename_all_rules
     }
 
     pub fn ser_bound(&self) -> Option<&[syn::WherePredicate]> {
@@ -1528,7 +1528,7 @@ impl Field {
         self.name.deserialize_aliases()
     }
 
-    pub fn rename_by_rules(&mut self, rules: &RenameAllRules) {
+    pub fn rename_by_rules(&mut self, rules: RenameAllRules) {
         if !self.name.serialize_renamed {
             self.name.serialize = rules.serialize.apply_to_field(&self.name.serialize);
         }
